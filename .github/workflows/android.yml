@@ -1,5 +1,5 @@
 
-name: Build Android APK
+name: Build Parsa Calculator
 
 on:
   workflow_dispatch:
@@ -11,17 +11,19 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - name: Checkout
+      - name: Download project
         uses: actions/checkout@v4
 
-      - name: Build APK
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
-        with:
-          workdir: .
+      - name: Build Android APK
+        run: |
+          mkdir -p "$HOME/.buildozer"
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE":/home/user/hostcwd \
+            -v "$HOME/.buildozer":/home/user/.buildozer \
+            ghcr.io/kivy/buildozer:latest android debug
 
-      - name: Upload APK
+      - name: Save APK
         uses: actions/upload-artifact@v4
         with:
-          name: ParsaCalculator
+          name: ParsaCalculator-APK
           path: bin/*.apk
